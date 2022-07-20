@@ -1,7 +1,9 @@
-import 'package:auto_route/annotations.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:im_good_test_app/presentation/users/user/widgets/post_preview_tile.dart';
+
+import 'bloc/posts_bloc.dart';
 
 class UserPostsPage extends StatelessWidget {
   final String userId;
@@ -12,6 +14,35 @@ class UserPostsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox();
+    return Material(
+      child: BlocProvider(
+        create: (context) => PostsBloc()..add(PostsInitialLoading(userId)),
+        child: BlocBuilder<PostsBloc, PostsState>(
+          builder: (context, state) {
+            if (state is PostsLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            state as PostsLoaded;
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('All posts'),
+                automaticallyImplyLeading: false,
+                leading: const AutoLeadingButton(),
+              ),
+              body: ListView.builder(
+                itemCount: state.posts.length,
+                itemBuilder: (context, index) {
+                  final post = state.posts.elementAt(index);
+                  return PostPreviewTile(post: post);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
