@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_good_test_app/core/data/repositories/cache_repository_impl.dart';
 import 'package:im_good_test_app/core/data/repositories/users_repository_impl.dart';
@@ -32,6 +33,9 @@ class _TestAppState extends State<TestApp> {
     return MaterialApp.router(
       routeInformationParser: routerDelegate.defaultRouteParser(),
       routerDelegate: routerDelegate.delegate(),
+      localizationsDelegates: const [
+        FormBuilderLocalizations.delegate,
+      ],
     );
   }
 }

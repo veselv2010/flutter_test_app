@@ -6,12 +6,15 @@ import 'package:im_good_test_app/core/domain/models/post.dart';
 import 'package:im_good_test_app/core/domain/models/photo.dart';
 import 'package:im_good_test_app/core/domain/models/comment.dart';
 import 'package:im_good_test_app/core/domain/models/album.dart';
+import 'package:im_good_test_app/core/domain/repositories/cache_repository.dart';
 import 'package:im_good_test_app/core/domain/repositories/users_repository.dart';
 
 class UsersRepositoryImpl implements UsersRepository {
   final Dio httpClient;
+  final CacheRepository cacheRepository;
 
-  UsersRepositoryImpl({Dio? httpClient}) : httpClient = httpClient ?? Dio() {
+  UsersRepositoryImpl({required this.cacheRepository, Dio? httpClient})
+      : httpClient = httpClient ?? Dio() {
     this.httpClient.options.baseUrl = 'https://jsonplaceholder.typicode.com';
   }
 
@@ -82,14 +85,8 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<Comment> getSpecificComment({required int id}) {
-    // TODO: implement getSpecificComment
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Post?> getSpecificPost({required int userId, required int id}) async {
-    final res = await httpClient.get('/users/$userId/posts/$id');
+  Future<Post?> getSpecificPost({required int postId}) async {
+    final res = await httpClient.get('/posts/$postId');
     if (res.statusCode == 200) {
       final serialized = res.data as Map;
       return Post.fromJson(jsonEncode(serialized));
@@ -107,5 +104,14 @@ class UsersRepositoryImpl implements UsersRepository {
     }
 
     return null;
+  }
+
+  @override
+  Future<Post?> sendComment(
+      {required String email,
+      required String name,
+      required String text,
+      required int postId}) async {
+    final requiredCommentId = cacheRepository.getValuesFromCache<Comment>();
   }
 }

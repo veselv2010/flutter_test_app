@@ -27,7 +27,7 @@ class CacheRepositoryImpl implements CacheRepository {
   }
 
   @override
-  Future<List<String>?> getValuesFromCache<T>(int id) async {
+  Future<List<String>?> getValuesFromCache<T>() async {
     final prefs = await _getPrefs();
 
     return prefs.getStringList(_getKeyFromType<T>());

@@ -12,7 +12,13 @@ abstract class UsersRepository {
   Future<List<Post>> getPosts({required int userId});
 
   Future<User?> getSpecificUser({required int id});
-  Future<Comment?> getSpecificComment({required int id});
   Future<Album?> getSpecificAlbum({required int albumId});
-  Future<Post?> getSpecificPost({required int userId, required int id});
+  Future<Post?> getSpecificPost({required int postId});
+
+  Future<Post?> sendComment({
+    required String email,
+    required String name,
+    required String text,
+    required int postId,
+  });
 }
