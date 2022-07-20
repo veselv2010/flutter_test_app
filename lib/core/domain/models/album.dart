@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:im_good_test_app/core/domain/models/serializable.dart';
+import 'package:im_good_test_app/core/domain/models/i_serializable.dart';
 
 class Album implements ISerializible {
   final int userId;

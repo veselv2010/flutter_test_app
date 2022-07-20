@@ -42,6 +42,7 @@ dependencies:
   flutter_bloc: ^8.0.1
   build_runner: ^2.2.0
   auto_route_generator: ^4.2.0
+  tuple: ^2.0.0
 
 dev_dependencies:
   flutter_test:

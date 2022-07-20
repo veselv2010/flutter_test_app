@@ -11,16 +11,16 @@ import 'package:im_good_test_app/core/domain/repositories/users_repository.dart'
 class UsersRepositoryImpl implements UsersRepository {
   final Dio httpClient;
 
-  UsersRepositoryImpl(this.httpClient) {
-    httpClient.options.baseUrl = 'https://jsonplaceholder.typicode.com';
+  UsersRepositoryImpl({Dio? httpClient}) : httpClient = httpClient ?? Dio() {
+    this.httpClient.options.baseUrl = 'https://jsonplaceholder.typicode.com';
   }
 
   @override
   Future<List<Album>> getAlbums({required int userId}) async {
     final res = await httpClient.get('/users/$userId/albums');
     if (res.statusCode == 200) {
-      final serialized = jsonDecode(res.data) as List;
-      return serialized.map((e) => Album.fromJson(e)).toList();
+      final serialized = res.data as List;
+      return serialized.map((e) => Album.fromJson(jsonEncode(e))).toList();
     }
 
     return [];
@@ -30,8 +30,8 @@ class UsersRepositoryImpl implements UsersRepository {
   Future<List<Comment>> getComments({required int postId}) async {
     final res = await httpClient.get('/posts/$postId/comments');
     if (res.statusCode == 200) {
-      final serialized = jsonDecode(res.data) as List;
-      return serialized.map((e) => Comment.fromJson(e)).toList();
+      final serialized = res.data as List;
+      return serialized.map((e) => Comment.fromJson(jsonEncode(e))).toList();
     }
 
     return [];
@@ -41,8 +41,8 @@ class UsersRepositoryImpl implements UsersRepository {
   Future<List<Photo>> getPhotos({required int albumId}) async {
     final res = await httpClient.get('/albums/$albumId/photos');
     if (res.statusCode == 200) {
-      final serialized = jsonDecode(res.data) as List;
-      return serialized.map((e) => Photo.fromJson(e)).toList();
+      final serialized = res.data as List;
+      return serialized.map((e) => Photo.fromJson(jsonEncode(e))).toList();
     }
 
     return [];
@@ -52,8 +52,8 @@ class UsersRepositoryImpl implements UsersRepository {
   Future<List<Post>> getPosts({required int userId}) async {
     final res = await httpClient.get('/users/$userId/posts');
     if (res.statusCode == 200) {
-      final serialized = jsonDecode(res.data) as List;
-      return serialized.map((e) => Post.fromJson(e)).toList();
+      final serialized = res.data as List;
+      return serialized.map((e) => Post.fromJson(jsonEncode(e))).toList();
     }
 
     return [];
@@ -63,10 +63,50 @@ class UsersRepositoryImpl implements UsersRepository {
   Future<List<User>> getUsers() async {
     final res = await httpClient.get('/users/');
     if (res.statusCode == 200) {
-      final serialized = jsonDecode(res.data) as List;
-      return serialized.map((e) => User.fromJson(e)).toList();
+      final serialized = res.data as List;
+      return serialized.map((e) => User.fromJson(jsonEncode(e))).toList();
     }
 
     return [];
+  }
+
+  @override
+  Future<Album> getSpecificAlbum({required int id}) {
+    // TODO: implement getSpecificAlbum
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Comment> getSpecificComment({required int id}) {
+    // TODO: implement getSpecificComment
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Photo> getSpecificPhoto({required int id}) {
+    // TODO: implement getSpecificPhoto
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Post?> getSpecificPost({required int userId, required int id}) async {
+    final res = await httpClient.get('/users/$userId/posts/$id');
+    if (res.statusCode == 200) {
+      final serialized = res.data as Map;
+      return Post.fromJson(jsonEncode(serialized));
+    }
+
+    return null;
+  }
+
+  @override
+  Future<User?> getSpecificUser({required int id}) async {
+    final res = await httpClient.get('/users/$id');
+    if (res.statusCode == 200) {
+      final serialized = res.data as Map;
+      return User.fromJson(jsonEncode(serialized));
+    }
+
+    return null;
   }
 }

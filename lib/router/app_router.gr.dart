@@ -19,7 +19,7 @@ class _$AppRouter extends RootStackRouter {
   final Map<String, PageFactory> pagesMap = {
     UsersPageRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
-          routeData: routeData, child: const UsersPage());
+          routeData: routeData, child: UsersPage());
     },
     UserPageRoute.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
