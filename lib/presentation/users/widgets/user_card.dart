@@ -13,11 +13,8 @@ class UserCard extends StatelessWidget {
       title: Text(user.username),
       subtitle: Text(user.name),
       onTap: () {
-        AutoRouter.of(context).navigate(
-          UserPageRoute(
-            userId: user.id.toString(),
-          ),
-        );
+        AutoRouter.of(context)
+            .navigate(UserHelperPageRoute(userId: user.id.toString()));
       },
     );
   }

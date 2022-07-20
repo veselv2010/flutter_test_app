@@ -71,20 +71,19 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   @override
-  Future<Album> getSpecificAlbum({required int id}) {
-    // TODO: implement getSpecificAlbum
-    throw UnimplementedError();
+  Future<Album?> getSpecificAlbum({required int albumId}) async {
+    final res = await httpClient.get('/albums/$albumId');
+    if (res.statusCode == 200) {
+      final serialized = res.data as Map;
+      return Album.fromJson(jsonEncode(serialized));
+    }
+
+    return null;
   }
 
   @override
   Future<Comment> getSpecificComment({required int id}) {
     // TODO: implement getSpecificComment
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Photo> getSpecificPhoto({required int id}) {
-    // TODO: implement getSpecificPhoto
     throw UnimplementedError();
   }
 

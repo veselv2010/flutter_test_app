@@ -13,7 +13,6 @@ abstract class UsersRepository {
 
   Future<User?> getSpecificUser({required int id});
   Future<Comment?> getSpecificComment({required int id});
-  Future<Album?> getSpecificAlbum({required int id});
-  Future<Photo?> getSpecificPhoto({required int id});
+  Future<Album?> getSpecificAlbum({required int albumId});
   Future<Post?> getSpecificPost({required int userId, required int id});
 }

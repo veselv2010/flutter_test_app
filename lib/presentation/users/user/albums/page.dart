@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:im_good_test_app/presentation/users/user/albums/bloc/albums_bloc.dart';
 import 'package:im_good_test_app/presentation/users/user/albums/widgets/album_tile.dart';
+import 'package:im_good_test_app/presentation/widgets/auto_scaffold.dart';
 
 class UserAlbumsPage extends StatelessWidget {
   final String userId;
@@ -23,12 +24,8 @@ class UserAlbumsPage extends StatelessWidget {
             }
 
             state as AlbumsLoaded;
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('Albums'),
-                automaticallyImplyLeading: false,
-                leading: const AutoLeadingButton(),
-              ),
+            return AutoScaffold(
+              title: 'Albums',
               body: ListView.builder(
                 itemCount: state.albums.length,
                 itemBuilder: (context, index) {

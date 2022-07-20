@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:im_good_test_app/presentation/users/user/widgets/post_preview_tile.dart';
+import 'package:im_good_test_app/presentation/widgets/auto_scaffold.dart';
 
 import 'bloc/posts_bloc.dart';
 
@@ -26,12 +27,8 @@ class UserPostsPage extends StatelessWidget {
             }
 
             state as PostsLoaded;
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('All posts'),
-                automaticallyImplyLeading: false,
-                leading: const AutoLeadingButton(),
-              ),
+            return AutoScaffold(
+              title: 'All posts',
               body: ListView.builder(
                 itemCount: state.posts.length,
                 itemBuilder: (context, index) {

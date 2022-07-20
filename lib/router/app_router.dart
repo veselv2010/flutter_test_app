@@ -1,9 +1,9 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:im_good_test_app/presentation/users/page.dart';
 import 'package:im_good_test_app/presentation/users/user/albums/album_details/page.dart';
 import 'package:im_good_test_app/presentation/users/user/albums/page.dart';
+import 'package:im_good_test_app/presentation/users/user/helper_page.dart';
 import 'package:im_good_test_app/presentation/users/user/page.dart';
 import 'package:im_good_test_app/presentation/users/user/posts/page.dart';
 import 'package:im_good_test_app/presentation/users/user/posts/post_details/page.dart';
@@ -18,28 +18,34 @@ part 'app_router.gr.dart';
     page: UsersPage,
   ),
   AutoRoute(
+    usesPathAsKey: true,
     path: Routes.user,
-    page: UserPage,
+    page: UserHelperPage,
     children: [
       AutoRoute(
-        path: Routes.posts,
-        page: UserPostsPage,
-        children: [
-          AutoRoute(
-            path: Routes.comments,
-            page: PostDetailsPage,
-          )
-        ],
+        initial: true,
+        path: '',
+        page: UserPage,
       ),
       AutoRoute(
+        usesPathAsKey: true,
+        path: Routes.posts,
+        page: UserPostsPage,
+      ),
+      AutoRoute(
+        usesPathAsKey: true,
+        path: Routes.comments,
+        page: PostDetailsPage,
+      ),
+      AutoRoute(
+        usesPathAsKey: true,
         path: Routes.albums,
         page: UserAlbumsPage,
-        children: [
-          AutoRoute(
-            path: Routes.album,
-            page: AlbumDetailsPage,
-          ),
-        ],
+      ),
+      AutoRoute(
+        usesPathAsKey: true,
+        path: Routes.album,
+        page: AlbumDetailsPage,
       ),
     ],
   ),
