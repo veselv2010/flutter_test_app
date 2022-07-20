@@ -1,7 +1,8 @@
-import 'package:auto_route/annotations.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:im_good_test_app/presentation/users/user/albums/bloc/albums_bloc.dart';
+import 'package:im_good_test_app/presentation/users/user/albums/widgets/album_tile.dart';
 
 class UserAlbumsPage extends StatelessWidget {
   final String userId;
@@ -10,6 +11,35 @@ class UserAlbumsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox();
+    return Material(
+      child: BlocProvider(
+        create: (context) => AlbumsBloc()..add(AlbumsInitialLoadEvent(userId)),
+        child: BlocBuilder<AlbumsBloc, AlbumsState>(
+          builder: (context, state) {
+            if (state is AlbumsLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            state as AlbumsLoaded;
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Albums'),
+                automaticallyImplyLeading: false,
+                leading: const AutoLeadingButton(),
+              ),
+              body: ListView.builder(
+                itemCount: state.albums.length,
+                itemBuilder: (context, index) {
+                  final album = state.albums.elementAt(index);
+                  return AlbumTile(album: album);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
