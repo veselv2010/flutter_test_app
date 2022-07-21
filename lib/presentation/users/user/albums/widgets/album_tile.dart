@@ -1,8 +1,5 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:im_good_test_app/core/domain/models/album.dart';
 import 'package:im_good_test_app/router/app_router.dart';
 

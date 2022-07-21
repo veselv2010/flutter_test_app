@@ -11,73 +11,56 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheRepositoryImpl implements CacheRepository {
   @override
-  Future<String?> getValueFromCache<T>(int id) async {
-    final prefs = await _getPrefs();
-    final cachedData = prefs.getStringList(_getKeyFromType<T>());
+  Future<T?> getValueFromCache<T>({
+    required int id,
+    required String key,
+    required T Function(String json) mapper,
+  }) async {
+    final data = await getValuesFromCache(key: key, mapper: mapper);
+    if (data == null) return null;
 
-    if (cachedData == null) {
-      return null;
-    }
-
-    if (cachedData.length > id) {
-      return cachedData.elementAt(id);
+    if (data.length > id) {
+      return data.elementAt(id);
     }
 
     return null;
   }
 
   @override
-  Future<List<String>?> getValuesFromCache<T>() async {
+  Future<List<T>?> getValuesFromCache<T>(
+      {required String key, required T Function(String json) mapper}) async {
     final prefs = await _getPrefs();
-
-    return prefs.getStringList(_getKeyFromType<T>());
+    return prefs.getStringList(key)?.map((e) => mapper(e)).toList();
   }
 
   @override
-  Future<bool> putValueToCache<T extends ISerializible>(int id, T value) async {
+  Future<bool> putValueToCache<T extends ISerializible>(
+    String key,
+    T value,
+  ) async {
     final prefs = await _getPrefs();
     final serialized = jsonEncode(value.toMap());
-    final cachedData = prefs.getStringList(_getKeyFromType<T>());
+    final cachedData = prefs.getStringList(key);
 
     if (cachedData == null) {
-      return prefs.setStringList(_getKeyFromType<T>(), [serialized]);
+      return prefs.setStringList(key, [serialized]);
     }
 
-    if (cachedData.length < id) {
-      cachedData.add(serialized);
-    } else {
-      cachedData[id] = serialized;
-    }
+    cachedData.add(jsonEncode(value.toMap()));
 
-    return prefs.setStringList(_getKeyFromType<T>(), cachedData);
+    return prefs.setStringList(key, cachedData);
   }
 
   @override
-  Future<bool> putValuesToCache<T extends ISerializible>(List<T> values) async {
+  Future<bool> putValuesToCache<T extends ISerializible>(
+      {required String key, required List<T> values}) async {
     final prefs = await _getPrefs();
     final serialized = values.map((e) => jsonEncode(e.toMap())).toList();
 
-    return prefs.setStringList(_getKeyFromType<T>(), serialized);
+    return prefs.setStringList(key, serialized);
   }
 
   Future<SharedPreferences> _getPrefs() {
     return SharedPreferences.getInstance();
-  }
-
-  String _getKeyFromType<T>() {
-    switch (T) {
-      case User:
-        return 'users';
-      case Comment:
-        return 'comments';
-      case Album:
-        return 'albums';
-      case Post:
-        return 'posts';
-      case Photo:
-        return 'photo';
-      default:
-        throw UnsupportedError('Invalid type');
-    }
   }
 }

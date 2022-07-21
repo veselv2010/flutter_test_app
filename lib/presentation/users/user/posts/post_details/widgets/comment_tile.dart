@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:im_good_test_app/core/domain/models/comment.dart';
 
 class CommentTile extends StatelessWidget {

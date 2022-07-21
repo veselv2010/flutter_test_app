@@ -1,117 +1,62 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:im_good_test_app/core/data/repositories/dio_response_handler_mixin.dart';
 import 'package:im_good_test_app/core/domain/models/user.dart';
-import 'package:im_good_test_app/core/domain/models/post.dart';
-import 'package:im_good_test_app/core/domain/models/photo.dart';
-import 'package:im_good_test_app/core/domain/models/comment.dart';
-import 'package:im_good_test_app/core/domain/models/album.dart';
 import 'package:im_good_test_app/core/domain/repositories/cache_repository.dart';
 import 'package:im_good_test_app/core/domain/repositories/users_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class UsersRepositoryImpl implements UsersRepository {
+class UsersRepositoryImpl
+    with DioResponseHandlerMixin
+    implements UsersRepository {
   final Dio httpClient;
   final CacheRepository cacheRepository;
+  final _usersKey = 'users';
 
-  UsersRepositoryImpl({required this.cacheRepository, Dio? httpClient})
-      : httpClient = httpClient ?? Dio() {
-    this.httpClient.options.baseUrl = 'https://jsonplaceholder.typicode.com';
-  }
-
-  @override
-  Future<List<Album>> getAlbums({required int userId}) async {
-    final res = await httpClient.get('/users/$userId/albums');
-    if (res.statusCode == 200) {
-      final serialized = res.data as List;
-      return serialized.map((e) => Album.fromJson(jsonEncode(e))).toList();
-    }
-
-    return [];
-  }
-
-  @override
-  Future<List<Comment>> getComments({required int postId}) async {
-    final res = await httpClient.get('/posts/$postId/comments');
-    if (res.statusCode == 200) {
-      final serialized = res.data as List;
-      return serialized.map((e) => Comment.fromJson(jsonEncode(e))).toList();
-    }
-
-    return [];
-  }
-
-  @override
-  Future<List<Photo>> getPhotos({required int albumId}) async {
-    final res = await httpClient.get('/albums/$albumId/photos');
-    if (res.statusCode == 200) {
-      final serialized = res.data as List;
-      return serialized.map((e) => Photo.fromJson(jsonEncode(e))).toList();
-    }
-
-    return [];
-  }
-
-  @override
-  Future<List<Post>> getPosts({required int userId}) async {
-    final res = await httpClient.get('/users/$userId/posts');
-    if (res.statusCode == 200) {
-      final serialized = res.data as List;
-      return serialized.map((e) => Post.fromJson(jsonEncode(e))).toList();
-    }
-
-    return [];
-  }
+  UsersRepositoryImpl(
+      {required this.cacheRepository, required this.httpClient});
 
   @override
   Future<List<User>> getUsers() async {
+    final cache = await cacheRepository.getValuesFromCache(
+      key: _usersKey,
+      mapper: User.fromJson,
+    );
+
+    if (cache != null && cache.isNotEmpty) {
+      return cache;
+    }
+
     final res = await httpClient.get('/users/');
-    if (res.statusCode == 200) {
-      final serialized = res.data as List;
-      return serialized.map((e) => User.fromJson(jsonEncode(e))).toList();
-    }
+    final users =
+        handleGenericListReponse<User>(res: res, mapper: User.fromJson);
 
-    return [];
-  }
+    await cacheRepository.putValuesToCache(key: _usersKey, values: users);
 
-  @override
-  Future<Album?> getSpecificAlbum({required int albumId}) async {
-    final res = await httpClient.get('/albums/$albumId');
-    if (res.statusCode == 200) {
-      final serialized = res.data as Map;
-      return Album.fromJson(jsonEncode(serialized));
-    }
-
-    return null;
-  }
-
-  @override
-  Future<Post?> getSpecificPost({required int postId}) async {
-    final res = await httpClient.get('/posts/$postId');
-    if (res.statusCode == 200) {
-      final serialized = res.data as Map;
-      return Post.fromJson(jsonEncode(serialized));
-    }
-
-    return null;
+    return users;
   }
 
   @override
   Future<User?> getSpecificUser({required int id}) async {
-    final res = await httpClient.get('/users/$id');
-    if (res.statusCode == 200) {
-      final serialized = res.data as Map;
-      return User.fromJson(jsonEncode(serialized));
+    final cache = await cacheRepository.getValueFromCache(
+      id: id,
+      key: _usersKey,
+      mapper: User.fromJson,
+    );
+
+    if (cache != null) {
+      return cache;
     }
 
-    return null;
-  }
+    final res = await httpClient.get('/users/$id');
+    final user = handleGenericReponse<User>(res: res, mapper: User.fromJson);
+    if (user == null) {
+      return null;
+    }
 
-  @override
-  Future<Post?> sendComment(
-      {required String email,
-      required String name,
-      required String text,
-      required int postId}) async {
-    final requiredCommentId = cacheRepository.getValuesFromCache<Comment>();
+    await cacheRepository.putValueToCache(_usersKey, user);
+
+    return user;
   }
 }

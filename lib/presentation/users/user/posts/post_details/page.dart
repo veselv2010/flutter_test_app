@@ -1,8 +1,5 @@
 import 'package:auto_route/annotations.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:im_good_test_app/presentation/users/user/posts/post_details/bloc/post_details_bloc.dart';
 import 'package:im_good_test_app/presentation/users/user/posts/post_details/widgets/add_comment_button.dart';

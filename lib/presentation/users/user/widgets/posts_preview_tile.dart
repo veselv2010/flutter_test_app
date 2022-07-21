@@ -1,10 +1,6 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:im_good_test_app/core/domain/models/post.dart';
-import 'package:im_good_test_app/presentation/users/user/posts/page.dart';
 import 'package:im_good_test_app/presentation/users/user/widgets/post_preview_tile.dart';
 import 'package:im_good_test_app/router/app_router.dart';
 
