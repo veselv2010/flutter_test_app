@@ -31,6 +31,7 @@ class _TestAppState extends State<TestApp> {
   void initState() {
     final httpClient =
         Dio(BaseOptions(baseUrl: 'https://jsonplaceholder.typicode.com'));
+
     GetIt.I.registerSingleton<CacheRepository>(CacheRepositoryImpl());
     GetIt.I.registerSingleton<UsersRepository>(UsersRepositoryImpl(
         cacheRepository: GetIt.I.get(), httpClient: httpClient));

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class UserHelperPage extends StatelessWidget {
   final String userId;
-  
+
   const UserHelperPage({Key? key, @pathParam required this.userId})
       : super(key: key);
 

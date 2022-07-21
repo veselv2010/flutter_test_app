@@ -8,9 +8,11 @@ import 'package:im_good_test_app/presentation/widgets/auto_scaffold.dart';
 
 class AlbumDetailsPage extends StatelessWidget {
   final String albumId;
+  final String userId;
   const AlbumDetailsPage({
     Key? key,
     @pathParam required this.albumId,
+    @pathParam required this.userId,
   }) : super(key: key);
 
   @override

@@ -20,21 +20,29 @@ class PostsRepositoryImpl
     required this.httpClient,
   });
   @override
-  Future<List<Comment>> getComments({required int postId}) async {
+  Future<List<Comment>> getCommentsForPost({required int postId}) async {
     final cache = await cacheRepository.getValuesFromCache(
       key: _commentsKey,
       mapper: Comment.fromJson,
     );
 
-    if (cache != null && cache.isNotEmpty) {
-      return cache;
+    if (cache.isNotEmpty) {
+      final cachedComments =
+          cache.where((comment) => comment.postId == postId).toList();
+      if (cachedComments.isNotEmpty) {
+        return cachedComments;
+      }
     }
 
     final res = await httpClient.get('/posts/$postId/comments');
+
     final comments = handleGenericListReponse<Comment>(
         res: res, mapper: (e) => Comment.fromJson(e));
+    cache
+      ..addAll(comments)
+      ..sort((a, b) => a.id.compareTo(b.id));
 
-    await cacheRepository.putValuesToCache(key: _commentsKey, values: comments);
+    await cacheRepository.putValuesToCache(key: _commentsKey, values: cache);
 
     return comments;
   }
@@ -52,6 +60,7 @@ class PostsRepositoryImpl
     }
 
     final res = await httpClient.get('/posts/$postId');
+
     final post = handleGenericReponse<Post>(res: res, mapper: Post.fromJson);
 
     if (post == null) {
@@ -59,27 +68,8 @@ class PostsRepositoryImpl
     }
 
     await cacheRepository.putValueToCache(_postsKey, post);
+
     return post;
-  }
-
-  @override
-  Future<List<Post>> getPosts() async {
-    final cache = await cacheRepository.getValuesFromCache(
-      key: _postsKey,
-      mapper: Post.fromJson,
-    );
-
-    if (cache != null && cache.isNotEmpty) {
-      return cache;
-    }
-
-    final res = await httpClient.get('/posts');
-    final posts =
-        handleGenericListReponse<Post>(res: res, mapper: Post.fromJson);
-
-    await cacheRepository.putValuesToCache(key: _postsKey, values: posts);
-
-    return posts;
   }
 
   @override
@@ -89,15 +79,22 @@ class PostsRepositoryImpl
       mapper: Post.fromJson,
     );
 
-    if (cache != null && cache.isNotEmpty) {
-      return cache;
+    if (cache.isNotEmpty) {
+      final cachedPosts = cache.where((post) => post.userId == userId).toList();
+      if (cachedPosts.isNotEmpty) {
+        return cachedPosts;
+      }
     }
 
     final res = await httpClient.get('/users/$userId/posts');
+
     final posts = handleGenericListReponse<Post>(
         res: res, mapper: (e) => Post.fromJson(e));
+    cache
+      ..addAll(posts)
+      ..sort((a, b) => a.id.compareTo(b.id));
 
-    await cacheRepository.putValuesToCache(key: _postsKey, values: posts);
+    await cacheRepository.putValuesToCache(key: _postsKey, values: cache);
 
     return posts;
   }
@@ -106,9 +103,23 @@ class PostsRepositoryImpl
   Future<bool> sendComment(
       {required String email,
       required String name,
-      required String text,
-      required int postId}) {
-    // TODO: implement sendComment
-    throw UnimplementedError();
+      required String body,
+      required int postId}) async {
+    final post = await httpClient.post('/posts/$postId/comments', data: {
+      'postId': postId,
+      'name': name,
+      'email': email,
+      'body': body,
+    });
+
+    if (post.statusCode != 201) {
+      return false;
+    }
+
+    final comment = Comment.fromJson(jsonEncode(post.data));
+
+    await cacheRepository.putValueToCache(_commentsKey, comment);
+
+    return true;
   }
 }

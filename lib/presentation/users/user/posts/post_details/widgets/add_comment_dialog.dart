@@ -1,10 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get_it/get_it.dart';
-import 'package:im_good_test_app/core/domain/models/comment.dart';
-import 'package:im_good_test_app/core/domain/repositories/users_repository.dart';
+import 'package:im_good_test_app/core/domain/repositories/posts_repository.dart';
 
+/// Returns [true] or [false] after commment saving
 class AddCommentDialog extends StatefulWidget {
   final int postId;
   const AddCommentDialog({Key? key, required this.postId}) : super(key: key);
@@ -14,7 +15,7 @@ class AddCommentDialog extends StatefulWidget {
 }
 
 class _AddCommentDialogState extends State<AddCommentDialog> {
-  final UsersRepository repository = GetIt.I.get();
+  final PostsRepository repository = GetIt.I.get();
 
   late bool isLoading;
   @override
@@ -57,7 +58,7 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 ]),
               ),
               FormBuilderTextField(
-                name: 'text',
+                name: 'body',
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 maxLines: 6,
                 minLines: 3,
@@ -69,30 +70,17 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 ]),
               ),
               if (isLoading)
-                const Center(
-                  child: CircularProgressIndicator(),
+                const SizedBox(
+                  height: 54,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 )
               else
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () async {
-                      final isValid = _formKey.currentState?.validate();
-                      if (isValid == true) {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        _formKey.currentState!.save();
-                        final value = _formKey.currentState!.value;
-                        final comment = Comment(
-                          id: 0,
-                          postId: widget.postId,
-                          name: value['name'],
-                          email: value['email'],
-                          body: value['email'],
-                        );
-                      }
-                    },
+                    onPressed: sendComment,
                     child: const Text('Send comment'),
                   ),
                 )
@@ -101,5 +89,26 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
         ),
       ),
     );
+  }
+
+  Future<void> sendComment() async {
+    final isValid = _formKey.currentState?.validate();
+    if (isValid == true) {
+      setState(() {
+        isLoading = true;
+      });
+      _formKey.currentState!.save();
+      final value = _formKey.currentState!.value;
+      final res = await repository.sendComment(
+        email: value['email'],
+        name: value['name'],
+        body: value['body'],
+        postId: widget.postId,
+      );
+
+      if (mounted) {
+        AutoRouter.of(context).pop(res);
+      }
+    }
   }
 }

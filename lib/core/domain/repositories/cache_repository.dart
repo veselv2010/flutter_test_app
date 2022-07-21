@@ -6,7 +6,7 @@ abstract class CacheRepository {
     required String key,
     required T Function(String json) mapper,
   });
-  Future<List<T>?> getValuesFromCache<T>(
+  Future<List<T>> getValuesFromCache<T>(
       {required String key, required T Function(String json) mapper});
 
   Future<bool> putValueToCache<T extends ISerializible>(String key, T value);

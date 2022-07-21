@@ -9,7 +9,7 @@ mixin DioResponseHandlerMixin {
       return [];
     }
 
-    final serialized = res.data as List<String>;
+    final serialized = res.data as List;
     return serialized.map((e) => mapper(jsonEncode(e))).toList();
   }
 

@@ -4,6 +4,7 @@ part of 'posts_bloc.dart';
 abstract class PostsState {}
 
 class PostsLoading extends PostsState {}
+
 class PostsLoaded extends PostsState {
   final List<Post> posts;
 

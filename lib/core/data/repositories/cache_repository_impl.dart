@@ -1,11 +1,6 @@
 import 'dart:convert';
 
-import 'package:im_good_test_app/core/domain/models/album.dart';
-import 'package:im_good_test_app/core/domain/models/comment.dart';
-import 'package:im_good_test_app/core/domain/models/photo.dart';
-import 'package:im_good_test_app/core/domain/models/post.dart';
 import 'package:im_good_test_app/core/domain/models/i_serializable.dart';
-import 'package:im_good_test_app/core/domain/models/user.dart';
 import 'package:im_good_test_app/core/domain/repositories/cache_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,20 +12,19 @@ class CacheRepositoryImpl implements CacheRepository {
     required T Function(String json) mapper,
   }) async {
     final data = await getValuesFromCache(key: key, mapper: mapper);
-    if (data == null) return null;
 
-    if (data.length > id) {
-      return data.elementAt(id);
+    if (data.length >= id) {
+      return data.elementAt(id - 1);
     }
 
     return null;
   }
 
   @override
-  Future<List<T>?> getValuesFromCache<T>(
+  Future<List<T>> getValuesFromCache<T>(
       {required String key, required T Function(String json) mapper}) async {
     final prefs = await _getPrefs();
-    return prefs.getStringList(key)?.map((e) => mapper(e)).toList();
+    return prefs.getStringList(key)?.map((e) => mapper(e)).toList() ?? [];
   }
 
   @override
@@ -56,7 +50,6 @@ class CacheRepositoryImpl implements CacheRepository {
       {required String key, required List<T> values}) async {
     final prefs = await _getPrefs();
     final serialized = values.map((e) => jsonEncode(e.toMap())).toList();
-
     return prefs.setStringList(key, serialized);
   }
 

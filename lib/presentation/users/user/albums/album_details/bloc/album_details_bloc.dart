@@ -1,10 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_good_test_app/core/domain/models/album.dart';
 import 'package:im_good_test_app/core/domain/models/photo.dart';
 import 'package:im_good_test_app/core/domain/repositories/albums_repository.dart';
-import 'package:im_good_test_app/core/domain/repositories/users_repository.dart';
-import 'package:meta/meta.dart';
 
 part 'album_details_event.dart';
 part 'album_details_state.dart';

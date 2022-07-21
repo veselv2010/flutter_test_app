@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:im_good_test_app/core/data/repositories/dio_response_handler_mixin.dart';
 import 'package:im_good_test_app/core/domain/models/photo.dart';
@@ -25,15 +23,22 @@ class AlbumsRepositoryImpl
       mapper: Album.fromJson,
     );
 
-    if (cache != null && cache.isNotEmpty) {
-      return cache;
+    if (cache.isNotEmpty) {
+      final userAlbums =
+          cache.where((album) => album.userId == userId).toList();
+      if (userAlbums.isNotEmpty) {
+        return userAlbums;
+      }
     }
 
     final res = await httpClient.get('/users/$userId/albums');
+
     final albums = handleGenericListReponse<Album>(
         res: res, mapper: (e) => Album.fromJson(e));
-
-    await cacheRepository.putValuesToCache(key: _albumsKey, values: albums);
+    cache
+      ..addAll(albums)
+      ..sort((a, b) => a.id.compareTo(b.id));
+    await cacheRepository.putValuesToCache(key: _albumsKey, values: cache);
 
     return albums;
   }
@@ -45,15 +50,24 @@ class AlbumsRepositoryImpl
       mapper: Photo.fromJson,
     );
 
-    if (cache != null && cache.isNotEmpty) {
-      return cache;
+    if (cache.isNotEmpty) {
+      final albumPhotos =
+          cache.where((photo) => photo.albumId == albumId).toList();
+      if (albumPhotos.isNotEmpty) {
+        return albumPhotos;
+      }
     }
 
     final res = await httpClient.get('/albums/$albumId/photos');
+
     final photos = handleGenericListReponse<Photo>(
         res: res, mapper: (e) => Photo.fromJson(e));
 
-    await cacheRepository.putValuesToCache(key: _albumsKey, values: photos);
+    cache
+      ..addAll(photos)
+      ..sort((a, b) => a.id.compareTo(b.id));
+
+    await cacheRepository.putValuesToCache(key: _photosKey, values: cache);
 
     return photos;
   }
@@ -71,6 +85,7 @@ class AlbumsRepositoryImpl
     }
 
     final res = await httpClient.get('/albums/$albumId');
+
     final album =
         handleGenericReponse<Album>(res: res, mapper: (e) => Album.fromJson(e));
 

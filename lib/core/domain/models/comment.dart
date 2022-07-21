@@ -45,8 +45,8 @@ class Comment implements ISerializible {
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      postId: map['postId']?.toInt() ?? 0,
-      id: map['id']?.toInt() ?? 0,
+      postId: int.parse(map['postId'].toString()),
+      id: int.parse(map['id'].toString()),
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       body: map['body'] ?? '',

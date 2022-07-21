@@ -75,25 +75,39 @@ class _$AppRouter extends RootStackRouter {
               albumId: pathParams.getString('albumId')));
       return MaterialPageX<dynamic>(
           routeData: routeData,
-          child: AlbumDetailsPage(key: args.key, albumId: args.albumId));
+          child: AlbumDetailsPage(
+              key: args.key,
+              albumId: args.albumId,
+              userId: pathParams.getString('userId')));
     }
   };
 
   @override
   List<RouteConfig> get routes => [
         RouteConfig(UsersPageRoute.name, path: '/'),
-        RouteConfig(UserHelperPageRoute.name, path: '/:userId', children: [
-          RouteConfig(UserPageRoute.name,
-              path: '', parent: UserHelperPageRoute.name),
-          RouteConfig(UserPostsPageRoute.name,
-              path: 'posts', parent: UserHelperPageRoute.name),
-          RouteConfig(PostDetailsPageRoute.name,
-              path: ':postId', parent: UserHelperPageRoute.name),
-          RouteConfig(UserAlbumsPageRoute.name,
-              path: 'albums', parent: UserHelperPageRoute.name),
-          RouteConfig(AlbumDetailsPageRoute.name,
-              path: ':albumId', parent: UserHelperPageRoute.name)
-        ])
+        RouteConfig(UserHelperPageRoute.name,
+            path: '/:userId',
+            usesPathAsKey: true,
+            children: [
+              RouteConfig(UserPageRoute.name,
+                  path: '', parent: UserHelperPageRoute.name),
+              RouteConfig(UserPostsPageRoute.name,
+                  path: 'posts',
+                  parent: UserHelperPageRoute.name,
+                  usesPathAsKey: true),
+              RouteConfig(PostDetailsPageRoute.name,
+                  path: ':postId',
+                  parent: UserHelperPageRoute.name,
+                  usesPathAsKey: true),
+              RouteConfig(UserAlbumsPageRoute.name,
+                  path: 'albums',
+                  parent: UserHelperPageRoute.name,
+                  usesPathAsKey: true),
+              RouteConfig(AlbumDetailsPageRoute.name,
+                  path: ':albumId',
+                  parent: UserHelperPageRoute.name,
+                  usesPathAsKey: true)
+            ])
       ];
 }
 

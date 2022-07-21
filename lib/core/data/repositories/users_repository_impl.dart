@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:im_good_test_app/core/data/repositories/dio_response_handler_mixin.dart';
 import 'package:im_good_test_app/core/domain/models/user.dart';
 import 'package:im_good_test_app/core/domain/repositories/cache_repository.dart';
 import 'package:im_good_test_app/core/domain/repositories/users_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UsersRepositoryImpl
     with DioResponseHandlerMixin
@@ -24,7 +21,7 @@ class UsersRepositoryImpl
       mapper: User.fromJson,
     );
 
-    if (cache != null && cache.isNotEmpty) {
+    if (cache.isNotEmpty) {
       return cache;
     }
 
